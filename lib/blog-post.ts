@@ -18,6 +18,14 @@ export type BlogPostView = {
   coverImageUrl: string | null;
 };
 
+function hasContentstackEnv(): boolean {
+  return Boolean(
+    process.env.CONTENTSTACK_API_KEY &&
+      process.env.CONTENTSTACK_DELIVERY_TOKEN &&
+      process.env.CONTENTSTACK_ENVIRONMENT,
+  );
+}
+
 function getEnv(name: "CONTENTSTACK_API_KEY" | "CONTENTSTACK_DELIVERY_TOKEN" | "CONTENTSTACK_ENVIRONMENT") {
   const v = process.env[name];
   if (!v) {
@@ -37,6 +45,10 @@ function getCoverImageUrl(cover: unknown): string | null {
  * Fetches a single blog_post entry by slug from the Contentstack Content Delivery API.
  */
 export async function getBlogPostBySlug(slug: string): Promise<BlogPostView | null> {
+  if (!hasContentstackEnv()) {
+    return null;
+  }
+
   const query = JSON.stringify({ slug });
   const url = new URL(`${CDA_BASE}/content_types/${BLOG_POST_UID}/entries`);
   url.searchParams.set("environment", getEnv("CONTENTSTACK_ENVIRONMENT"));

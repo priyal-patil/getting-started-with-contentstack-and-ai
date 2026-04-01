@@ -77,6 +77,14 @@ export async function searchBlogPosts(searchQuery: string): Promise<Record<strin
     return [];
   }
 
+  if (
+    !process.env.CONTENTSTACK_API_KEY ||
+    !process.env.CONTENTSTACK_DELIVERY_TOKEN ||
+    !process.env.CONTENTSTACK_ENVIRONMENT
+  ) {
+    return [];
+  }
+
   const escaped = escapeRegex(trimmed);
 
   const orQuery = {
